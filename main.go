@@ -6,14 +6,16 @@ import (
 	"strings"
 )
 
+var numberSet = "1234567890"
+var operatorSet = "+-*/"
+
 func getPriority(symbol string) int {
-	switch true {
-	case strings.Index("*/", symbol) != -1:
-		return 3
-	case strings.Index("+-", symbol) != -1:
-		return 2
-	case strings.Index("(", symbol) != -1:
-		return 1
+	switch symbol {
+	case "*": return 3
+	case "/": return 3
+	case "+": return 2
+	case "-": return 2
+	case "(": return 1
 	}
 	return 0
 }
@@ -28,12 +30,12 @@ func transformToRpn(str string) string {
 		symbol := string(char)
 
 		switch true {
-		case strings.Index("1234567890", symbol) != -1:
-			if rpnStr != "" && strings.Index("1234567890", prevSymbol) == -1 {
+		case strings.Index(numberSet, symbol) != -1:
+			if rpnStr != "" && strings.Index(numberSet, prevSymbol) == -1 {
 				rpnStr += " "
 			}
 			rpnStr += symbol
-		case strings.Index("+-*/", symbol) != -1:
+		case strings.Index(operatorSet, symbol) != -1:
 			if len(stack) == 0 || getPriority(stack[len(stack) - 1]) < getPriority(symbol) {
 				stack = append(stack, symbol)
 			} else {
@@ -41,10 +43,11 @@ func transformToRpn(str string) string {
 					rpnStr = rpnStr + " " + stack[len(stack) - 1]
 					stack = stack[:len(stack) - 1]
 				}
+				stack = append(stack, symbol)
 			}
-		case strings.Index("(", symbol) != -1:
+		case symbol == "(":
 			stack = append(stack, symbol)
-		case strings.Index(")", symbol) != -1:
+		case symbol == ")":
 			for len(stack) > 0 && stack[len(stack) - 1] != "(" {
 				rpnStr = rpnStr + " " + stack[len(stack) - 1]
 				stack = stack[:len(stack) - 1]
@@ -63,10 +66,10 @@ func transformToRpn(str string) string {
 	return rpnStr
 }
 
-func calc(str string) int {
+func calc(str string) float64 {
 	rpnStr := transformToRpn(str)
 
-	stack := make([]int, 0, 10)
+	stack := make([]float64, 0, 10)
 	expArray := strings.Split(rpnStr, " ")
 
 	for _, val := range expArray {
@@ -88,7 +91,8 @@ func calc(str string) int {
 			stack = stack[:len(stack) - 1]
 		} else {
 			num, _ := strconv.Atoi(val)
-			stack = append(stack, num)
+			floatNum := float64(num)
+			stack = append(stack, floatNum)
 		}
 	}
 
@@ -96,5 +100,5 @@ func calc(str string) int {
 }
 
 func main() {
-	fmt.Println(calc("(1-2)*3"))
+	fmt.Println(calc("2*2-1"))
 }
