@@ -39,3 +39,17 @@ func TestCalc(t *testing.T) {
 	require.Equal(t, calc("(1+2)*3"), 9.0,
 		"test calc failed")
 }
+
+func TestAddingLessPriorityOperator(t *testing.T) {
+	require.Equal(t, calc("2*2-1"), 3.0,
+		"test adding less priority operator failed")
+	require.Equal(t, calc("(2+2)*10-7"), 33.0,
+		"test adding less priority operator with brackets failed")
+}
+
+func TestCalcWithLongNumber(t *testing.T) {
+	require.Equal(t, calc("11+22*3"), 77.0,
+		"test calc with long number failed")
+	require.Equal(t, calc("(11+22)*3"), 99.0,
+		"test calc with long number and brackets failed")
+}
