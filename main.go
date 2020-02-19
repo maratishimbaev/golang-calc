@@ -20,7 +20,7 @@ func getPriority(symbol string) int {
 	return 0
 }
 
-func transformToRpn(str string) string {
+func transformToRpn(str string) (string, error) {
 	var rpnStr string
 	stack := make([]string, 0, 10)
 
@@ -52,7 +52,14 @@ func transformToRpn(str string) string {
 				rpnStr = rpnStr + " " + stack[len(stack) - 1]
 				stack = stack[:len(stack) - 1]
 			}
-			stack = stack[:len(stack) - 1]
+			if len(stack) > 0 {
+				stack = stack[:len(stack) - 1]
+			} else {
+				return "", fmt.Errorf("invalid brackets")
+			}
+		case symbol == " ":
+		default:
+			return "", fmt.Errorf("invalid symbol")
 		}
 
 		prevSymbol = symbol
@@ -63,11 +70,15 @@ func transformToRpn(str string) string {
 		stack = stack[:len(stack) - 1]
 	}
 
-	return rpnStr
+	return rpnStr, nil
 }
 
-func calc(str string) float64 {
-	rpnStr := transformToRpn(str)
+func calc(str string) (float64, error) {
+	rpnStr, err := transformToRpn(str)
+
+	if err != nil {
+		return 0.0, err
+	}
 
 	stack := make([]float64, 0, 10)
 	expArray := strings.Split(rpnStr, " ")
@@ -96,9 +107,14 @@ func calc(str string) float64 {
 		}
 	}
 
-	return stack[len(stack) - 1]
+	return stack[len(stack) - 1], nil
 }
 
 func main() {
-	fmt.Println(calc("2*2-1"))
+	result, err := calc("1+1)")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(result)
+	}
 }
