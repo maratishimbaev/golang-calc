@@ -22,14 +22,14 @@ func getPriority(symbol string) int {
 
 func transformToRpn(str string) (string, error) {
 	var rpnStr string
-	stack := make([]string, 0, 10)
+	var stack []string
 
 	var prevSymbol string
 
 	for _, char := range str {
 		symbol := string(char)
 
-		switch true {
+		switch {
 		case strings.Index(numberSet, symbol) != -1:
 			if rpnStr != "" && strings.Index(numberSet, prevSymbol) == -1 {
 				rpnStr += " "
